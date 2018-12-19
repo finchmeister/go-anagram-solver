@@ -1,28 +1,11 @@
 # Go Anagram Solver
 
-
-Systemd
+To deploy latest git version
 ```
-sudo vi /lib/systemd/system/goanagram.service
-```
-
-```
-[Unit]
-Description=goanagram
-
-[Service]
-Type=simple
-Restart=always
-RestartSec=5s
-ExecStart=/home/thefinchmeister/go-anagram-solver/main
-WorkingDirectory=/home/thefinchmeister/go-anagram-solver
-
-[Install]
-WantedBy=multi-user.target
+make deploy
 ```
 
-```
-sudo service goanagram start
-```
+TODO:
+Travis auto deploy
 
 https://oncletom.io/2016/travis-ssh-deploy/
