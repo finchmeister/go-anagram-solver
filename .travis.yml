@@ -1,7 +1,6 @@
-env:
-  global:
-    - USER=thefinchmeister
-    - SERVER_IP=35.185.30.127
+language: go
+go:
+  - "1.10"
 
 after_success:
   - echo Hello!
