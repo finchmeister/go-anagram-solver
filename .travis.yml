@@ -1,0 +1,7 @@
+env:
+  global:
+    - USER=thefinchmeister
+    - SERVER_IP=35.185.30.127
+
+after_success:
+  - echo Hello!
