@@ -54,14 +54,13 @@
 
 
 
-<div class="container">
+<div class="container mt-2">
     <div class="col-12 py-3">
     {{range .Anagrams }}
         <div>
             <h4>{{ .Length }} letters</h4>
             <p>
             {{ range .Words }}{{ . }} {{ end }}
-
             </p>
         </div>
     {{end}}
