@@ -1,11 +1,5 @@
 # Go Anagram Solver
 
-To deploy latest git version
-```
-make deploy
-```
+## Deploy:
 
-TODO:
-Travis auto deploy
-
-https://oncletom.io/2016/travis-ssh-deploy/
+Copy `.env.dist` to `.env` with working vars then run `make deploy`.
