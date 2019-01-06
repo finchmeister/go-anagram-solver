@@ -20,6 +20,7 @@ type Anagrams struct {
 
 var (
 	indexTemplate = template.Must(template.ParseFiles("template/index.html"))
+	debug         = false
 )
 
 func main() {
@@ -32,7 +33,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 
 	q := r.FormValue("q")
-	fmt.Println(q)
+	printDebug(q)
 
 	if len(q) > 9 {
 		q = q[:9]
@@ -53,37 +54,37 @@ type TemplateFields struct {
 }
 
 func getAnagrams(letters string, minLength int) []Anagrams {
-	printTime("Start")
-	p := make(map[string]string, 0)
+	printLog("Start")
+	wordPermsMap := make(map[string]string, 0)
 	st := strings.Split(strings.ToLower(letters), "")
 	stLen := len(st)
 	sort.Strings(st)
 
 	for {
-		p[strings.Join(st, "")] = ""
+		wordPermsMap[strings.Join(st, "")] = ""
 		if !mathutil.PermutationNext(sort.StringSlice(st)) {
 			break
 		}
 	}
 
 	for wordLen := stLen - 1; wordLen >= minLength; wordLen-- {
-		for perm := range p {
+		for perm := range wordPermsMap {
 			perm = perm[0:wordLen]
-			p[perm] = ""
+			wordPermsMap[perm] = ""
 		}
 	}
 
-	printTime("Perms done")
+	printLog("Perms done")
 
 	dict, _ := readDictIntoMap()
-	printTime("File converted to map")
+	printLog("File converted to map")
 
 	var keys []string
-	for k := range p {
+	for k := range wordPermsMap {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	printTime("Sorted")
+	printLog("Sorted")
 
 	wordsByLen := make(map[int][]string, 0)
 	for _, key := range keys {
@@ -99,15 +100,15 @@ func getAnagrams(letters string, minLength int) []Anagrams {
 
 	sort.Sort(sort.Reverse(ByLetterLength(allAnagrams)))
 
-	fmt.Println(wordsByLen)
+	printDebug(wordsByLen)
 
-	printTime("Searches done")
+	printLog("Searches done")
 
 	return allAnagrams
 }
 
 func readDictIntoMap() (map[string]bool, error) {
-	file, err := os.Open("/usr/share/dict/words")
+	file, err := os.Open("dictionary.txt")
 	if err != nil {
 		return nil, err
 	}
@@ -121,8 +122,16 @@ func readDictIntoMap() (map[string]bool, error) {
 	return words, scanner.Err()
 }
 
-func printTime(title string) {
-	fmt.Println(time.Now().Format(time.RFC3339Nano) + " " + title)
+func printDebug(a ...interface{}) {
+	if debug {
+		fmt.Println(a...)
+	}
+}
+
+func printLog(title string) {
+	if debug {
+		fmt.Println(time.Now().Format(time.RFC3339Nano) + " " + title)
+	}
 }
 
 type ByLetterLength []Anagrams
