@@ -34,7 +34,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.FormValue("q")
 	fmt.Println(q)
 
-	// TODO clean up
 	if len(q) > 9 {
 		q = q[:9]
 	}
@@ -56,7 +55,7 @@ type TemplateFields struct {
 func getAnagrams(letters string, minLength int) []Anagrams {
 	printTime("Start")
 	p := make(map[string]string, 0)
-	st := strings.Split(letters, "")
+	st := strings.Split(strings.ToLower(letters), "")
 	stLen := len(st)
 	sort.Strings(st)
 

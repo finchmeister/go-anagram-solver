@@ -9,7 +9,7 @@ SERVER=${USER}@${SERVER_IP}
 
 printf "About to sync code\n"
 
-rsync -vzO --exclude '.git' --exclude '.idea' --exclude 'main'  . ${SERVER}:/opt/go-anagram-solver/
+rsync -rvzO --exclude '.git' --exclude '.idea' --exclude 'main'  . ${SERVER}:/opt/go-anagram-solver/
 if [[ $? -gt 0 ]]
 then
     printf "${RED}${BOLD}FAIL! Unable to rsync code${NC}\n"
