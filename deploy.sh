@@ -4,11 +4,16 @@ RED='\033[0;31m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
 
-printf "Running tests\n"
+function writeLn {
+    printf "==> $1\n"
+}
+
+writeLn "Running tests"
+
 go test
 if [[ $? -gt 0 ]]
 then
-    printf "${RED}${BOLD}FAIL! Tests failed${NC}\n"
+    writeLn "${RED}${BOLD}FAIL! Tests failed${NC}\n"
     exit 1
 fi
 
@@ -16,23 +21,23 @@ fi
 export $(grep -v '^#' .env | xargs)
 SERVER=${USER}@${SERVER_IP}
 
-printf "About to sync code\n"
+writeLn "About to sync code"
 
 rsync -rvzO --exclude '.git' --exclude '.idea' --exclude 'main'  . ${SERVER}:/opt/go-anagram-solver/
 if [[ $? -gt 0 ]]
 then
-    printf "${RED}${BOLD}FAIL! Unable to rsync code${NC}\n"
+    writeLn "${RED}${BOLD}FAIL! Unable to rsync code${NC}"
     exit 1
 fi
-printf "Code synced! About to build binary and start service\n"
+writeLn "Code synced! About to build binary and start service"
 
 ssh ${SERVER} "cd /opt/go-anagram-solver && /usr/local/go/bin/go build main.go && sudo service goanagram start"
 if [[ $? -gt 0 ]]
 then
-    printf "${RED}${BOLD}FAIL! Unable to build and start service${NC}\n"
+    writeLn "${RED}${BOLD}FAIL! Unable to build and start service${NC}"
     exit 1
 fi
 
-printf "${GREEN}${BOLD}SUCCESS!${NC}\n"
-printf "View at http://${SERVER_IP}\n"
+writeLn "${GREEN}${BOLD}SUCCESS!${NC}"
+writeLn "View at http://${SERVER_IP}"
 exit 0
