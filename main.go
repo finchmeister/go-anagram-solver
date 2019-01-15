@@ -55,6 +55,10 @@ type TemplateFields struct {
 
 func getAnagrams(letters string, minLength int) []Anagrams {
 	printLog("Start")
+
+	var c = make(chan map[string]bool)
+	go readDictIntoMap(c)
+
 	wordPermsMap := make(map[string]string, 0)
 	st := strings.Split(strings.ToLower(letters), "")
 	stLen := len(st)
@@ -76,9 +80,6 @@ func getAnagrams(letters string, minLength int) []Anagrams {
 
 	printLog("Perms done")
 
-	dict, _ := readDictIntoMap()
-	printLog("File converted to map")
-
 	var keys []string
 	for k := range wordPermsMap {
 		keys = append(keys, k)
@@ -86,6 +87,7 @@ func getAnagrams(letters string, minLength int) []Anagrams {
 	sort.Strings(keys)
 	printLog("Sorted")
 
+	dict := <-c
 	wordsByLen := make(map[int][]string, 0)
 	for _, key := range keys {
 		if dict[key] == true {
@@ -107,11 +109,11 @@ func getAnagrams(letters string, minLength int) []Anagrams {
 	return allAnagrams
 }
 
-func readDictIntoMap() (map[string]bool, error) {
-	file, err := os.Open("dictionary.txt")
-	if err != nil {
-		return nil, err
-	}
+func readDictIntoMap(c chan map[string]bool) {
+	file, _ := os.Open("dictionary.txt")
+	//if err != nil {
+	//	return nil, err
+	//}
 	defer file.Close()
 
 	words := make(map[string]bool, 0)
@@ -119,7 +121,9 @@ func readDictIntoMap() (map[string]bool, error) {
 	for scanner.Scan() {
 		words[scanner.Text()] = true
 	}
-	return words, scanner.Err()
+	c <- words
+
+	//return words, scanner.Err()
 }
 
 func printDebug(a ...interface{}) {

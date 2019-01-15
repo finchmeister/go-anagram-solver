@@ -12,7 +12,11 @@ View at http://localhost:80
 
 ## Deploy
 
-Copy `.env.dist` to `.env` with working vars then run `make deploy`.
+Copy `.env.dist` to `.env` with working vars then run:
+ 
+ ```
+make deploy
+ ```
 
 ## Production
 

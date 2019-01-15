@@ -1,6 +1,6 @@
 language: go
 go:
-  - "1.10"
+  - "1.11"
 
-after_success:
-  - echo Hello!
+script:
+  - go test -v
