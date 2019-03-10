@@ -1,16 +1,16 @@
-package main
+package anagramsolver
 
 import "testing"
 
 func TestEightLetterAnagramYieldsSixWordLengths(t *testing.T) {
-	anagrams := getAnagrams("lindoite", 3)
+	anagrams := GetAnagrams("lindoite", 3)
 	if len(anagrams) != 6 {
 		t.Errorf("Expected 6 different word lengths anagrams got %d", len(anagrams))
 	}
 }
 
 func TestAnagramsFoundAardvark(t *testing.T) {
-	allAnagrams := getAnagrams("aardvark", 3)
+	allAnagrams := GetAnagrams("aardvark", 3)
 	if len(allAnagrams) != 4 {
 		t.Errorf("Expected 4 different word lengths anagrams got %d", len(allAnagrams))
 	}
