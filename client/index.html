@@ -54,7 +54,7 @@
                 <div class="my-3">
                     <form action="/" method="GET" >
                         <label class="sr-only" for="formInputLetters">Name</label>
-                        <input name="q" maxlength=9 type="text" class="form-control mb-2 mr-sm-2 autofocus" id="formInputLetters" placeholder="Letters" onkeypress="getAnagrams()" >
+                        <input name="q" maxlength=9 type="text" class="form-control mb-2 mr-sm-2 autofocus" id="formInputLetters" placeholder="Letters" onkeyup="getAnagrams()" >
                     </form>
                 </div>
             </div>
@@ -88,15 +88,24 @@
 
 <script>
     function getAnagrams() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                document.getElementById("demo").innerHTML = this.responseText;
+        var letters = document.getElementById("formInputLetters").value;
+
+        // Set up our HTTP request
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function () {
+
+            // Process our return data
+            if (xhr.status >= 200 && xhr.status < 300) {
+                document.getElementById("results").innerHTML = xhr.response
+                // TODO, format json
+            } else {
+                console.log('The request failed!');
             }
         };
-        xhttp.open("GET", "demo_get.asp", true);
-        xhttp.send();
 
+        xhr.open('GET', 'https://us-central1-anagram-solver-you.cloudfunctions.net/HelloYou?q='+letters);
+        xhr.send();
     }
 </script>
 

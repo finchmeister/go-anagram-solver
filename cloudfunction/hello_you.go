@@ -27,6 +27,7 @@ func init() {
 }
 
 func HelloYou(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	start := time.Now()
 	q := r.URL.Query().Get("q")
 
