@@ -28,6 +28,7 @@ func init() {
 
 func HelloYou(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("cache-control", "max-age=86400")
 	start := time.Now()
 	q := r.URL.Query().Get("q")
 
@@ -38,13 +39,14 @@ func HelloYou(w http.ResponseWriter, r *http.Request) {
 	stdLogger.Println("Start: " + q)
 
 	anagrams := GetAnagrams(q, 3)
-	timeTaken := int(time.Since(start).Nanoseconds() / 1000000)
-	stdLogger.Println("Time: " + string(timeTaken) + "ms")
+	timeTaken := fmt.Sprintf("%.0f", float32(time.Since(start).Nanoseconds()/1000000))
+	stdLogger.Println("Time: " + timeTaken + "ms")
 
 	if q == "" {
 		fmt.Fprint(w, "Hello, you!")
 		return
 	}
+
 	b, err := json.Marshal(anagrams)
 	if err != nil {
 		fmt.Println(err)

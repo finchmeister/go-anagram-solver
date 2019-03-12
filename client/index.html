@@ -52,23 +52,24 @@
         <div class="row">
             <div class="col-12">
                 <div class="my-3">
-                    <form action="/" method="GET" >
                         <label class="sr-only" for="formInputLetters">Name</label>
-                        <input name="q" maxlength=9 type="text" class="form-control mb-2 mr-sm-2 autofocus" id="formInputLetters" placeholder="Letters" onkeyup="getAnagrams()" >
-                    </form>
+                        <input name="q" maxlength=9 type="text" class="form-control mb-2 mr-sm-2 autofocus" id="formInputLetters" placeholder="Letters" onkeyup="getAnagrams()" onsubmit="event.returnValue=false;" >
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
-
 <div class="container mt-3">
     <div class="row">
-        <div id="results" class="col-12 py-4">
+        <div id="results" class="col-12 py-4 d-none">
 
         </div>
+
+        <div id="introText" class="text-center font-slightly-bigger col-12 py-4">
+            <p>Find anagrams and words from the messed up letters provided.</p>
+        </div>
+
     </div>
 </div>
 
@@ -78,7 +79,7 @@
     <div class="row py-3">
         <div class="col-8 ">
 
-                <p>Time taken: TODO ms</p>
+                <!-- <p>Time taken: <span id="timeTaken"></span> ms</p> -->
         </div>
         <div class="col-4 text-right">
             <a href="https://github.com/finchmeister/go-anagram-solver">Source <i class="fab fa-github"></i></a>
@@ -88,7 +89,19 @@
 
 <script>
     function getAnagrams() {
-        var letters = document.getElementById("formInputLetters").value;
+        let letters = document.getElementById("formInputLetters").value;
+        let introTextElement = document.getElementById("introText");
+        let resultsElement = document.getElementById("results");
+
+        if (letters.length <= 3) {
+            resultsElement.classList.add("d-none");
+            introTextElement.classList.remove("d-none");
+            return
+        }
+        introTextElement.classList.add("d-none");
+
+        resultsElement.classList.remove("d-none");
+        resultsElement.innerHTML = "Loading...";
 
         // Set up our HTTP request
         var xhr = new XMLHttpRequest();
@@ -97,15 +110,30 @@
 
             // Process our return data
             if (xhr.status >= 200 && xhr.status < 300) {
-                document.getElementById("results").innerHTML = xhr.response
-                // TODO, format json
+                updateHtml(xhr.response)
             } else {
                 console.log('The request failed!');
             }
         };
 
-        xhr.open('GET', 'https://us-central1-anagram-solver-you.cloudfunctions.net/HelloYou?q='+letters);
+        xhr.open('GET', 'https://europe-west1-anagram-solver-you.cloudfunctions.net/HelloYou?q='+letters);
         xhr.send();
+    }
+
+    function updateHtml(jsonString) {
+        let anagramsHtml = '';
+        let anagrams = JSON.parse(jsonString.trim());
+        for (let i = 0; i < anagrams.length; i++) {
+            let noOfLetters = anagrams[i]["Length"];
+            let words = anagrams[i]["Words"].join(" ");
+            anagramsHtml += `
+                    <div>
+                        <h4>${noOfLetters} letters</h4>
+                        <p>${words}</p>
+                    </div>`
+        }
+
+        document.getElementById("results").innerHTML = anagramsHtml;
     }
 </script>
 
