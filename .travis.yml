@@ -3,5 +3,5 @@ go:
   - "1.11"
 
 script:
-  - go get ./...
-  - go test -v
+  - export GO111MODULE=on
+  - cd anagramsolver && go test -v

@@ -22,7 +22,6 @@ var (
 
 func init() {
 	stdLogger.Println("Init - reading dictionary")
-	//go readDictIntoMap(c)
 	dictionary = readDictIntoMap()
 }
 
@@ -53,10 +52,7 @@ func HelloYou(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, string(b))
-	//fmt.Fprintf(w, "Hello, %s!", html.EscapeString(q))
 }
-
-var debug = false
 
 type Anagrams struct {
 	Words  []string
@@ -64,9 +60,6 @@ type Anagrams struct {
 }
 
 func GetAnagrams(letters string, minLength int) []Anagrams {
-	//var c = make(chan map[string]bool)
-	//go readDictIntoMap(c)
-
 	wordPermsMap := make(map[string]string, 0)
 	st := strings.Split(strings.ToLower(letters), "")
 	stLen := len(st)
@@ -109,8 +102,6 @@ func GetAnagrams(letters string, minLength int) []Anagrams {
 
 	sort.Sort(sort.Reverse(byLetterLength(allAnagrams)))
 
-	printDebug(wordsByLen)
-
 	stdLogger.Println("Searches done")
 
 	return allAnagrams
@@ -126,9 +117,6 @@ func readDictIntoMap() map[string]bool {
 	}
 
 	stdLogger.Println("Reading dictionary")
-	//_, filename, _, _ := runtime.Caller(0)
-	//filepath := path.Join(path.Dir(filename), "dictionary.txt")
-	//file, err := os.Open(filepath)
 	file, err := os.Open("/tmp/dictionary.txt")
 
 	if err != nil {
@@ -147,35 +135,20 @@ func readDictIntoMap() map[string]bool {
 	return words
 }
 
-func printDebug(a ...interface{}) {
-	if debug {
-		fmt.Println(a...)
-	}
-}
-
-//func printLog(title string) {
-//	if debug {
-//		fmt.Println(time.Now().Format(time.RFC3339Nano) + " " + title)
-//	}
-//}
-
 func DownloadFile(filepath string, url string) error {
 
-	// Get the data
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
 }
