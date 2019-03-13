@@ -66,8 +66,11 @@
 
         </div>
 
-        <div id="introText" class="text-center font-slightly-bigger col-12 py-4">
-            <p>Find anagrams and words from the messed up letters provided.</p>
+
+
+        <div id="introTextBox" class="text-center font-slightly-bigger col-12 py-4">
+            <p id="introText">Find anagrams and words from messed up letters.</p>
+            <p id="moreLettersText" class="d-none">Please enter more than 3 letters</p>
         </div>
 
     </div>
@@ -90,18 +93,25 @@
 <script>
     function getAnagrams() {
         let letters = document.getElementById("formInputLetters").value;
+        let introTextBoxElement = document.getElementById("introTextBox");
         let introTextElement = document.getElementById("introText");
         let resultsElement = document.getElementById("results");
 
         if (letters.length <= 3) {
             resultsElement.classList.add("d-none");
-            introTextElement.classList.remove("d-none");
+            introTextBoxElement.classList.remove("d-none");
+            if (letters.length > 0) {
+                document.getElementById("moreLettersText").classList.remove("d-none");
+                document.getElementById("introText").classList.add("d-none");
+            } else {
+                document.getElementById("moreLettersText").classList.add("d-none");
+                document.getElementById("introText").classList.remove("d-none");
+            }
             return
         }
-        introTextElement.classList.add("d-none");
+        introTextBoxElement.classList.add("d-none");
 
         resultsElement.classList.remove("d-none");
-        resultsElement.innerHTML = "Loading...";
 
         // Set up our HTTP request
         var xhr = new XMLHttpRequest();
