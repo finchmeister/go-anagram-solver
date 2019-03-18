@@ -94,7 +94,6 @@
     function getAnagrams() {
         let letters = document.getElementById("formInputLetters").value;
         let introTextBoxElement = document.getElementById("introTextBox");
-        let introTextElement = document.getElementById("introText");
         let resultsElement = document.getElementById("results");
 
         if (letters.length <= 3) {
@@ -113,16 +112,11 @@
 
         resultsElement.classList.remove("d-none");
 
-        // Set up our HTTP request
         var xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
-
-            // Process our return data
-            if (xhr.status >= 200 && xhr.status < 300) {
-                updateHtml(xhr.response)
-            } else {
-                console.log('The request failed!');
+            if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
+                updateHtml(xhr.response.toString());
             }
         };
 
