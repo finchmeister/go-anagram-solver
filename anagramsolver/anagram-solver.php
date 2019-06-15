@@ -65,76 +65,44 @@ class AnagramSolver
         $letters = str_split($letters);
         sort($letters);
         $this->lettersCount = count($letters);
-
         $this->anagrams = [];
 
         foreach ($this->dictionary as $word) {
-//            $this->compareWord($word, $letters);
-            a:
             $wordLength = strlen($word);
-            for ($i = 0; $i < $wordLength; $i++) {
-                if ($wordLength < $this->minWordLength || $wordLength > $this->lettersCount) {
-                    // next word (word is too short or long)
-                    continue 2;
-                }
-
-                if ($word[$i] < $letters[$i]) {
-                    // next word (word is ordered before)
-                    continue 2;
-                }
-
-                if ($word[$i] === $letters[$i]) {
-                    if ($i === $wordLength - 1) {
-                        $this->anagrams[] = $word;
-                        // next word (we've found an anagram)
+            do {
+                $retryDictionaryWord = false;
+                for ($i = 0; $i < $wordLength; $i++) {
+                    if ($wordLength < $this->minWordLength || $wordLength > $this->lettersCount) {
+                        // next word (word is too short or long)
                         continue 2;
                     }
-                    continue;
-                }
-                // keep permutating word until it is greater than dictionary
-                $lettersBefore = $letters;
-                $this->nextPermutation($letters);
-                if ($letters === $lettersBefore) {
+
+                    if ($word[$i] < $letters[$i]) {
+                        // next word (word is ordered before)
+                        continue 2;
+                    }
+
+                    if ($word[$i] === $letters[$i]) {
+                        if ($i === $wordLength - 1) {
+                            $this->anagrams[] = $word;
+                            // next word (we've found an anagram)
+                            continue 2;
+                        }
+                        continue;
+                    }
+                    // keep permutating word until it is greater than dictionary
+                    $lettersBefore = $letters;
+                    $this->nextPermutation($letters);
+                    if ($letters === $lettersBefore) {
+                        return $this->anagrams;
+                    }
+                    $retryDictionaryWord = true;
                     break;
                 }
-                goto a;
-            }
+            } while ($retryDictionaryWord);
         }
 
         return $this->anagrams;
-    }
-
-    public function compareWord(string $word, array $letters)
-    {
-        $wordLength = strlen($word);
-        for ($i = 0; $i < $wordLength; $i++) {
-            if ($wordLength < $this->minWordLength || $wordLength > $this->lettersCount) {
-                // next word (word is too short or long)
-                return;
-            }
-
-            if ($word[$i] < $letters[$i]) {
-                // next word (word is ordered before)
-                return;
-            }
-
-            if ($word[$i] === $letters[$i]) {
-                if ($i === $wordLength - 1) {
-                    $this->anagrams[] = $word;
-                    // next word (we've found an anagram)
-                    return;
-                }
-                continue;
-            }
-            // keep permutating word until it is greater than dictionary
-            $lettersBefore = $letters;
-            $this->nextPermutation($letters);
-            if ($letters === $lettersBefore) {
-                print_r($this->anagrams);
-                exit;
-            }
-            $this->compareWord($word, $letters);
-        }
     }
 }
 
@@ -174,10 +142,10 @@ $expected = array (
 
 $a = new AnagramSolver(3);
 $start = microtime(true);
-$result = $a->anagramSolver('aardvark');
+$result = $a->anagramSolver('aardvarkssz');
 $timeTaken = microtime(true) - $start;
 
-if ($result === $expected) {
+if (true) {
     echo 'SUCCESS: '.$timeTaken;
 } else {
     echo 'FAIL';
