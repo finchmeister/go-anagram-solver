@@ -15,12 +15,12 @@ import (
 var (
 	stdLogger = log.New(os.Stdout, "", 0)
 	logger    = log.New(os.Stderr, "", 0)
-	//dictionary = make(map[string]bool, 0)
+	a         = anagramsolver.NewAnagramSolver(false, false)
 )
 
 func init() {
 	stdLogger.Println("Init - reading dictionary")
-	//dictionary = readDictIntoMap()
+	a.Dict = readDictIntoMap()
 }
 
 func HelloYou(w http.ResponseWriter, r *http.Request) {
@@ -28,9 +28,6 @@ func HelloYou(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("cache-control", "max-age=86400")
 	start := time.Now()
 	q := r.URL.Query().Get("q")
-
-	a := anagramsolver.NewAnagramSolver(false, false)
-	a.Dict = readDictIntoMap()
 
 	var anagrams []anagramsolver.Anagrams
 	stdLogger.Println("Start: " + q)

@@ -53,7 +53,7 @@
             <div class="col-12">
                 <div class="my-3">
                         <label class="sr-only" for="formInputLetters">Name</label>
-                        <input name="q" maxlength=9 type="text" class="form-control mb-2 mr-sm-2 autofocus" id="formInputLetters" placeholder="Letters" onkeyup="getAnagrams()" onsubmit="event.returnValue=false;" >
+                        <input name="q" type="text" class="form-control mb-2 mr-sm-2 autofocus" id="formInputLetters" placeholder="Letters" onkeyup="getAnagrams()" onsubmit="event.returnValue=false;" >
                 </div>
             </div>
         </div>
@@ -91,6 +91,14 @@
 </div>
 
 <script>
+    warmUp();
+
+    function warmUp() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://europe-west1-anagram-solver-you.cloudfunctions.net/HelloYou');
+        xhr.send();
+    }
+
     function getAnagrams() {
         let letters = document.getElementById("formInputLetters").value;
         let introTextBoxElement = document.getElementById("introTextBox");
