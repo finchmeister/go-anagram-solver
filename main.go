@@ -14,6 +14,18 @@ var (
 )
 
 func main() {
+	anagramsolver.GetAnagrams("aar", 3)
+	anagramsolver.GetAnagrams("aard", 3)
+	anagramsolver.GetAnagrams("aardv", 3)
+	anagramsolver.GetAnagrams("aardva", 3)
+	anagramsolver.GetAnagrams("aardvar", 3)
+	anagramsolver.GetAnagrams("aardvark", 3)
+	anagramsolver.GetAnagrams("aardvarks", 3)
+	anagramsolver.GetAnagrams("aardvarksa", 3)
+	anagramsolver.GetAnagrams("aardvarksab", 3)
+
+	return
+
 	http.HandleFunc("/", indexHandler)
 
 	log.Fatal(http.ListenAndServe(":80", nil))

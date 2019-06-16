@@ -62,7 +62,9 @@ class AnagramSolver
 
     public function anagramSolver(string $letters)
     {
-        $letters = str_split($letters);
+        $start = microtime(true);
+
+        $letters = str_split(strtolower($letters));
         sort($letters);
         $this->lettersCount = count($letters);
         $this->anagrams = [];
@@ -94,6 +96,9 @@ class AnagramSolver
                     $lettersBefore = $letters;
                     $this->nextPermutation($letters);
                     if ($letters === $lettersBefore) {
+                        $timeTaken = microtime(true) - $start;
+                        echo $timeTaken*1000 .PHP_EOL;
+
                         return $this->anagrams;
                     }
                     $retryDictionaryWord = true;
@@ -102,7 +107,55 @@ class AnagramSolver
             } while ($retryDictionaryWord);
         }
 
+        $timeTaken = microtime(true) - $start;
+        echo $timeTaken*1000 .PHP_EOL;
+
+
         return $this->anagrams;
+    }
+
+    public function anagramSolver2(string $letters)
+    {
+        $start = microtime(true);
+
+        $letters = str_split(strtolower($letters));
+        sort($letters);
+        $this->lettersCount = count($letters);
+        $this->anagrams = [];
+
+        foreach ($this->dictionary as $word) {
+            if ($this->skipWord($word)) {
+                continue;
+            }
+            if ($this->isWordInLetters($word, $letters)) {
+                $this->anagrams[] = $word;
+            }
+        }
+
+        $timeTaken = microtime(true) - $start;
+
+        echo $timeTaken*1000 .PHP_EOL;
+
+        return $this->anagrams;
+    }
+
+    private function skipWord(string $word): bool
+    {
+        $wordLength = strlen($word);
+        return $wordLength < $this->minWordLength || $wordLength > $this->lettersCount;
+    }
+
+    private function isWordInLetters(string $word, array $letters)
+    {
+        foreach (str_split($word) as $letter) {
+            $key = array_search($letter, $letters);
+            if ($key === false) {
+                return false;
+            }
+            unset($letters[$key]);
+        }
+
+        return true;
     }
 }
 
@@ -141,13 +194,25 @@ $expected = array (
 );
 
 $a = new AnagramSolver(3);
-$start = microtime(true);
-$result = $a->anagramSolver('aardvarkssz');
-$timeTaken = microtime(true) - $start;
+//$start = microtime(true);
+//$result = $a->anagramSolver2('aardvarksab');
+//$timeTaken = microtime(true) - $start;
 
-if (true) {
-    echo 'SUCCESS: '.$timeTaken;
-} else {
-    echo 'FAIL';
-    print_r($result);
-}
+$a->anagramSolver("aar");
+$a->anagramSolver("aard");
+$a->anagramSolver("aardv");
+$a->anagramSolver("aardva");
+$a->anagramSolver("aardvar");
+$a->anagramSolver("aardvark");
+$a->anagramSolver("aardvarks");
+$a->anagramSolver("aardvarksa");
+$a->anagramSolver("aardvarksab");
+
+//if ($result === $expected) {
+//    echo 'SUCCESS';
+//} else {
+//    echo 'FAIL';
+//    print_r($result);
+//}
+//print_r($result);
+//echo $timeTaken.PHP_EOL;
