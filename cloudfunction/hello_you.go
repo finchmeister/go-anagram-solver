@@ -4,25 +4,23 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/finchmeister/go-anagram-solver/anagramsolver"
 	"io"
 	"log"
-	"modernc.org/mathutil"
 	"net/http"
 	"os"
-	"sort"
-	"strings"
 	"time"
 )
 
 var (
-	stdLogger  = log.New(os.Stdout, "", 0)
-	logger     = log.New(os.Stderr, "", 0)
-	dictionary = make(map[string]bool, 0)
+	stdLogger = log.New(os.Stdout, "", 0)
+	logger    = log.New(os.Stderr, "", 0)
+	//dictionary = make(map[string]bool, 0)
 )
 
 func init() {
 	stdLogger.Println("Init - reading dictionary")
-	dictionary = readDictIntoMap()
+	//dictionary = readDictIntoMap()
 }
 
 func HelloYou(w http.ResponseWriter, r *http.Request) {
@@ -31,13 +29,19 @@ func HelloYou(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	q := r.URL.Query().Get("q")
 
-	if len(q) > 9 {
-		q = q[:9]
+	a := anagramsolver.NewAnagramSolver(false, false)
+	a.Dict = readDictIntoMap()
+
+	var anagrams []anagramsolver.Anagrams
+	stdLogger.Println("Start: " + q)
+	if len(q) < 10 {
+		// Algo 1
+		anagrams = a.GetAnagramsAlgo1(q, 3)
+	} else {
+		// Algo 3
+		anagrams = a.GetAnagramsAlgo3(q, 3)
 	}
 
-	stdLogger.Println("Start: " + q)
-
-	anagrams := GetAnagrams(q, 3)
 	timeTaken := fmt.Sprintf("%.0f", float32(time.Since(start).Nanoseconds()/1000000))
 	stdLogger.Println("Time: " + timeTaken + "ms")
 
@@ -52,59 +56,6 @@ func HelloYou(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, string(b))
-}
-
-type Anagrams struct {
-	Words  []string
-	Length int
-}
-
-func GetAnagrams(letters string, minLength int) []Anagrams {
-	wordPermsMap := make(map[string]string, 0)
-	st := strings.Split(strings.ToLower(letters), "")
-	stLen := len(st)
-	sort.Strings(st)
-
-	for {
-		wordPermsMap[strings.Join(st, "")] = ""
-		if !mathutil.PermutationNext(sort.StringSlice(st)) {
-			break
-		}
-	}
-
-	for wordLen := stLen - 1; wordLen >= minLength; wordLen-- {
-		for perm := range wordPermsMap {
-			perm = perm[0:wordLen]
-			wordPermsMap[perm] = ""
-		}
-	}
-
-	stdLogger.Println("Perms done")
-
-	var keys []string
-	for k := range wordPermsMap {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	stdLogger.Println("Sorted")
-
-	wordsByLen := make(map[int][]string, 0)
-	for _, key := range keys {
-		if dictionary[key] == true {
-			wordsByLen[len(key)] = append(wordsByLen[len(key)], key)
-		}
-	}
-
-	allAnagrams := make([]Anagrams, 0)
-	for length, words := range wordsByLen {
-		allAnagrams = append(allAnagrams, Anagrams{Words: words, Length: length})
-	}
-
-	sort.Sort(sort.Reverse(byLetterLength(allAnagrams)))
-
-	stdLogger.Println("Searches done")
-
-	return allAnagrams
 }
 
 func readDictIntoMap() map[string]bool {
@@ -152,9 +103,3 @@ func DownloadFile(filepath string, url string) error {
 	_, err = io.Copy(out, resp.Body)
 	return err
 }
-
-type byLetterLength []Anagrams
-
-func (a byLetterLength) Len() int           { return len(a) }
-func (a byLetterLength) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byLetterLength) Less(i, j int) bool { return a[i].Length < a[j].Length }

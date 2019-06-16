@@ -70,7 +70,7 @@
 
         <div id="introTextBox" class="text-center font-slightly-bigger col-12 py-4">
             <p id="introText">Find anagrams and words from messed up letters.</p>
-            <p id="moreLettersText" class="d-none">Please enter more than 3 letters</p>
+            <p id="moreLettersText" class="d-none">Please enter 3 or more letters</p>
         </div>
 
     </div>
@@ -96,7 +96,7 @@
         let introTextBoxElement = document.getElementById("introTextBox");
         let resultsElement = document.getElementById("results");
 
-        if (letters.length <= 3) {
+        if (letters.length < 3) {
             resultsElement.classList.add("d-none");
             introTextBoxElement.classList.remove("d-none");
             if (letters.length > 0) {

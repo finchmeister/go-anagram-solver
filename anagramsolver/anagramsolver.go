@@ -2,17 +2,13 @@ package anagramsolver
 
 import (
 	"bufio"
-	"fmt"
 	"modernc.org/mathutil"
 	"os"
 	"path"
 	"runtime"
 	"sort"
 	"strings"
-	"time"
 )
-
-var debug = false
 
 type Anagrams struct {
 	Words  []string
@@ -24,10 +20,12 @@ type anagramSolver struct {
 	Debug bool
 }
 
-func NewAnagramSolver(debug bool) *anagramSolver {
+func NewAnagramSolver(useLocalDict bool, debug bool) *anagramSolver {
 	a := new(anagramSolver)
 	a.Debug = debug
-	a.Dict = a.loadDictionary()
+	if useLocalDict {
+		a.Dict = a.loadDictionary()
+	}
 	return a
 }
 
@@ -46,18 +44,18 @@ func (a anagramSolver) loadDictionary() map[string]bool {
 	return words
 }
 
-func (a anagramSolver) GetAnagrams(letters string, minLength int) []Anagrams {
+func (a anagramSolver) GetAnagramsAlgo3(letters string, minLength int) []Anagrams {
 	lettersLength := len(letters)
 	var wordLength int
 
 	wordsByLen := make(map[int][]string, 0)
 
-	for word, _ := range a.Dict {
+	for word := range a.Dict {
 		wordLength = len(word)
 		if wordLength < minLength || wordLength > lettersLength {
 			continue
 		}
-		if isWordInLetters(word, letters) {
+		if a.isWordInLetters(word, letters) {
 			wordsByLen[len(word)] = append(wordsByLen[len(word)], word)
 		}
 	}
@@ -73,12 +71,7 @@ func (a anagramSolver) GetAnagrams(letters string, minLength int) []Anagrams {
 	return allAnagrams
 }
 
-func GetAnagrams(letters string, minLength int) []Anagrams {
-	printLog("Start")
-
-	var c = make(chan map[string]bool)
-	go readDictIntoMap(c)
-
+func (a anagramSolver) GetAnagramsAlgo1(letters string, minLength int) []Anagrams {
 	wordPermsMap := make(map[string]string, 0)
 	st := strings.Split(strings.ToLower(letters), "")
 	stLen := len(st)
@@ -98,21 +91,15 @@ func GetAnagrams(letters string, minLength int) []Anagrams {
 		}
 	}
 
-	printLog("Perms done")
-
 	var keys []string
 	for k := range wordPermsMap {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	printLog("Sorted")
-
-	dict := <-c
-	start := time.Now()
 
 	wordsByLen := make(map[int][]string, 0)
 	for _, key := range keys {
-		if dict[key] == true {
+		if a.Dict[key] == true {
 			wordsByLen[len(key)] = append(wordsByLen[len(key)], key)
 		}
 	}
@@ -124,55 +111,10 @@ func GetAnagrams(letters string, minLength int) []Anagrams {
 
 	sort.Sort(sort.Reverse(byLetterLength(allAnagrams)))
 
-	printDebug(wordsByLen)
-
-	fmt.Println(time.Since(start).String())
-
 	return allAnagrams
 }
 
-func GetAnagrams2(letters string, minLength int) []Anagrams {
-	printLog("Start")
-
-	var c = make(chan map[string]bool)
-	go readDictIntoMap(c)
-
-	dict := <-c
-
-	start := time.Now()
-
-	lettersLength := len(letters)
-	var wordLength int
-
-	wordsByLen := make(map[int][]string, 0)
-
-	for word, _ := range dict {
-		wordLength = len(word)
-		if wordLength < minLength || wordLength > lettersLength {
-			continue
-		}
-		if isWordInLetters(word, letters) {
-			wordsByLen[len(word)] = append(wordsByLen[len(word)], word)
-		}
-	}
-
-	allAnagrams := make([]Anagrams, 0)
-	for length, words := range wordsByLen {
-		sort.Strings(words)
-		allAnagrams = append(allAnagrams, Anagrams{Words: words, Length: length})
-	}
-
-	sort.Sort(sort.Reverse(byLetterLength(allAnagrams)))
-
-	//printDebug(wordsByLen)
-
-	//timeTaken := fmt.Sprintf("%.0f", float32(time.Since(start).String()))
-	fmt.Println(time.Since(start).String())
-
-	return allAnagrams
-}
-
-func isWordInLetters(word string, letters string) bool {
+func (a anagramSolver) isWordInLetters(word string, letters string) bool {
 	lettersA := strings.Split(strings.ToLower(letters), "")
 	wordA := strings.Split(strings.ToLower(word), "")
 	var key int
@@ -200,35 +142,6 @@ func remove(s []string, i int) []string {
 	s[i] = s[len(s)-1]
 	// We do not need to put s[i] at the end, as it will be discarded anyway
 	return s[:len(s)-1]
-}
-
-func readDictIntoMap(c chan map[string]bool) {
-	_, filename, _, _ := runtime.Caller(0)
-	filepath := path.Join(path.Dir(filename), "dictionary.txt")
-	file, _ := os.Open(filepath)
-
-	defer file.Close()
-
-	words := make(map[string]bool, 0)
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		words[scanner.Text()] = true
-	}
-	c <- words
-
-	//return words, scanner.Err()
-}
-
-func printDebug(a ...interface{}) {
-	if debug {
-		fmt.Println(a...)
-	}
-}
-
-func printLog(title string) {
-	if debug {
-		fmt.Println(time.Now().Format(time.RFC3339Nano) + " " + title)
-	}
 }
 
 type byLetterLength []Anagrams
