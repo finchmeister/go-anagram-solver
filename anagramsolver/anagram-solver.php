@@ -60,7 +60,7 @@ class AnagramSolver
         return true;
     }
 
-    public function anagramSolver(string $letters)
+    public function anagramSolver2(string $letters)
     {
         $start = microtime(true);
 
@@ -114,7 +114,7 @@ class AnagramSolver
         return $this->anagrams;
     }
 
-    public function anagramSolver2(string $letters)
+    public function anagramSolver3(string $letters)
     {
         $start = microtime(true);
 
@@ -198,15 +198,21 @@ $a = new AnagramSolver(3);
 //$result = $a->anagramSolver2('aardvarksab');
 //$timeTaken = microtime(true) - $start;
 
-$a->anagramSolver("aar");
-$a->anagramSolver("aard");
-$a->anagramSolver("aardv");
-$a->anagramSolver("aardva");
-$a->anagramSolver("aardvar");
-$a->anagramSolver("aardvark");
-$a->anagramSolver("aardvarks");
-$a->anagramSolver("aardvarksa");
-$a->anagramSolver("aardvarksab");
+//$a->anagramSolver2("aar");
+//$a->anagramSolver2("aard");
+//$a->anagramSolver2("aardv");
+//$a->anagramSolver2("aardva");
+//$a->anagramSolver2("aardvar");
+//$a->anagramSolver2("aardvark");
+//$a->anagramSolver2("aardvarks");
+//$a->anagramSolver2("aardvarksa");
+//$a->anagramSolver2("aardvarksab");
+
+    $input = str_split('needs');
+    sort($input);
+do {
+    echo implode('', $input) . PHP_EOL;
+} while ($a->nextPermutation($input));
 
 //if ($result === $expected) {
 //    echo 'SUCCESS';

@@ -31,7 +31,7 @@ func HelloYou(w http.ResponseWriter, r *http.Request) {
 
 	var anagrams []anagramsolver.Anagrams
 	stdLogger.Println("Start: " + q)
-	if len(q) < 10 {
+	if len(q) < 9 {
 		// Algo 1
 		anagrams = a.GetAnagramsAlgo1(q, 3)
 	} else {

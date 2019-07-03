@@ -1,7 +1,9 @@
 package anagramsolver
 
 import (
+	"fmt"
 	"testing"
+	"time"
 )
 
 func TestEightLetterAnagramYieldsSixWordLengthsAlgo1(t *testing.T) {
@@ -69,18 +71,28 @@ func TestAnagramsFoundAardvarkAlgo3(t *testing.T) {
 	}
 }
 
+func benchAnagram(letters string) {
+	a := NewAnagramSolver(true, false)
+
+	start := time.Now()
+	a.GetAnagramsAlgo3(letters, 3)
+	fmt.Printf("%f \n", float64(time.Since(start).Nanoseconds())/(float64(time.Millisecond)/float64(time.Nanosecond)))
+	//fmt.Printf("%d \n", time.Since(start).Nanoseconds())
+}
+
 // Performance testing
-//func TestAnagrams1(t *testing.T) {
-//	GetAnagrams("aar", 3)
-//	GetAnagrams("aard", 3)
-//	GetAnagrams("aardv", 3)
-//	GetAnagrams("aardva", 3)
-//	GetAnagrams("aardvar", 3)
-//	GetAnagrams("aardvark", 3)
-//	GetAnagrams("aardvarks", 3)
-//	GetAnagrams("aardvarksa", 3)
-//	GetAnagrams("aardvarksab", 3)
-//}
+func TestAnagrams1(t *testing.T) {
+	benchAnagram("aar")
+	benchAnagram("aard")
+	benchAnagram("aardv")
+	benchAnagram("aardva")
+	benchAnagram("aardvar")
+	benchAnagram("aardvark")
+	benchAnagram("aardvarks")
+	benchAnagram("aardvarksa")
+	benchAnagram("aardvarksab")
+}
+
 //
 //func TestAnagrams2(t *testing.T) {
 //	GetAnagrams2("aar", 3)
